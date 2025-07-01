@@ -239,13 +239,18 @@ const Products = () => {
                                       setQuantity(e.target.value);
                                     }}
                                   >
-                                    {product.kilogramOption.map((weight) => {
+                                    {/* {product.kilogramOption.map((weight) => {
                                       return (
                                         <option key={weight.$numberDecimal} value={weight.$numberDecimal}>
   {weight.$numberDecimal} Kg
 </option>
                                       );
-                                    })}
+                                    })} */}
+                                    {product.kilogramOption.map((weight, index) => (
+  <option key={`${weight.$numberDecimal}-${index}`} value={weight.$numberDecimal}>
+    {weight.$numberDecimal} Kg
+  </option>
+))}
                                   </select>
                                   <button
                                     onClick={() => {

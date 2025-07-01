@@ -20,7 +20,7 @@ export const addCategoryAction = (categoryData) => async (dispatch) => {
     dispatch({ type: ADD_CATEGORY_REQUEST });
     const token = localStorage.getItem("authToken"); // ✅ Ensure token is retrieved
 
-    const { data } = await axios.post("http://localhost:8080/api/category/add", categoryData, {
+    const { data } = await axios.post("/api/category/add", categoryData, {
       withCredentials: true, // ✅ Ensures cookies are sent
       headers: { Authorization: `Bearer ${token}` } // ✅ Sends authentication token
     });
@@ -50,7 +50,7 @@ export const addCategoryAction = (categoryData) => async (dispatch) => {
 export const getAllCategoryAction = () => async (dispatch) => {
   try {
     dispatch({ type: GET_CATEGORY_REQUEST });
-    const { data } = await axios.get("http://localhost:8080/api/category/get");
+    const { data } = await axios.get("/api/category/get");
     
     console.log("✅ Categories API Response:", data); // Debugging log
     console.log("📢 Dispatching Categories to Redux:", data.Categories);
@@ -102,7 +102,7 @@ export const deleteCategoryAction = (categoryId) => async (dispatch) => {
     const token = localStorage.getItem("authToken"); // ✅ Ensure token is retrieved
     console.log("🔍 Sending Token:", token); // ✅ Debugging log
 
-    const { data } = await axios.delete(`http://localhost:8080/api/category/delete/${categoryId}`, {
+    const { data } = await axios.delete(`/api/category/delete/${categoryId}`, {
       headers: { Authorization: `Bearer ${token}` },
        withCredentials: true, // ✅ Sends authentication token
     });
@@ -139,7 +139,7 @@ export const updateCategoryAction = (categoryId, updateFormData) => async (dispa
     const token = localStorage.getItem("authToken"); // ✅ Ensure token is retrieved
     console.log("🔍 Sending Token:", token); // ✅ Debugging log
 
-    const { data } = await axios.put(`http://localhost:3000/api/category/update/${categoryId}`, updateFormData, {
+    const { data } = await axios.put(` /api/category/update/${categoryId}`, updateFormData, {
       headers: { Authorization: `Bearer ${token}` }, // ✅ Sends authentication token
     });
 

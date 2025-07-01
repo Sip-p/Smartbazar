@@ -147,39 +147,79 @@ const deleteCategory = async (req, res) => {
 };
 
 //Update Category
+// const updateCategory = async (req, res) => {
+//   try {
+//     if (req.params.categoryId) {
+//       const category = await categoryModel.findById(req.params.categoryId);
+//       if (req.body.categoryImage !== "") {
+//         const { categoryImage } = req.body;
+
+//        // ...existing code...
+// const result = await cloudinary.v2.uploader.upload(categoryImage, {
+//   folder: "category",
+// });
+// // ...existing code...
+//         category.categoryImage = result.url;
+//         category.categoryName = req.body.categoryName;
+//         await category.save();
+//         res.status(200).json({
+//           success: true,
+//           message: "Category Updated..!!",
+//         });
+//       } else {
+//         category.categoryName = req.body.categoryName;
+//         await category.save();
+//         res.status(200).json({
+//           success: true,
+//           message: "Category Updated..!!",
+//         });
+//       }
+//     } else {
+//       sendError("Category Id Required..!!");
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     sendError(res, 400, "Somethings Went's To Wrong..!!");
+//   }
+// };
 const updateCategory = async (req, res) => {
   try {
-    if (req.params.categoryId) {
-      const category = await categoryModel.findById(req.params.categoryId);
-      if (req.body.categoryImage !== "") {
-        const { categoryImage } = req.body;
+    const { categoryId } = req.params;
 
-       // ...existing code...
-const result = await cloudinary.v2.uploader.upload(categoryImage, {
-  folder: "category",
-});
-// ...existing code...
-        category.categoryImage = result.url;
-        category.categoryName = req.body.categoryName;
-        await category.save();
-        res.status(200).json({
-          success: true,
-          message: "Category Updated..!!",
-        });
-      } else {
-        category.categoryName = req.body.categoryName;
-        await category.save();
-        res.status(200).json({
-          success: true,
-          message: "Category Updated..!!",
-        });
-      }
-    } else {
-      sendError("Category Id Required..!!");
+    if (!categoryId) {
+      return sendError(res, 400, "Category Id Required..!!");
     }
+
+    const category = await categoryModel.findById(categoryId);
+    if (!category) {
+      return sendError(res, 404, "Category Not Found");
+    }
+
+    const { categoryName, categoryImage } = req.body;
+
+    // ✅ Update name if provided
+    if (categoryName) {
+      category.categoryName = categoryName;
+    }
+
+    // ✅ Update image only if a new one is sent
+    if (categoryImage && !categoryImage.startsWith("http")) {
+      const result = await cloudinary.v2.uploader.upload(categoryImage, {
+        folder: "category",
+      });
+      category.categoryImage = result.secure_url;
+    }
+
+    await category.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Category Updated Successfully!",
+      updatedCategory: category,
+    });
   } catch (error) {
-    console.log(error);
-    sendError(res, 400, "Somethings Went's To Wrong..!!");
+    console.error(error);
+    sendError(res, 500, "Something Went Wrong..!!");
   }
 };
 

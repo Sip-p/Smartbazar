@@ -74,13 +74,13 @@ export const getAllProductsAction =
       dispatch({ type: GET_ALL_PRODUCTS_REQUEST });
       let UrlLink;
       if (keyword !== "") {
-        UrlLink = `http://localhost:8080/api/product/getAllProducts?keyword=${keyword}`;
+        UrlLink = `/api/product/getAllProducts?keyword=${keyword}`;
       } else if (filterCategory && price) {
         const gte = price.split("-")[0];
         const lte = price.split("-")[1];
-        UrlLink = `http://localhost:8080/api/product/getAllProducts?category=${filterCategory}&gte=${gte}&lte=${lte}`;
+        UrlLink = ` /api/product/getAllProducts?category=${filterCategory}&gte=${gte}&lte=${lte}`;
       } else {
-        UrlLink = "http://localhost:8080/api/product/getAllProducts";
+        UrlLink = " /api/product/getAllProducts";
       }
       const { data } = await axios.get(UrlLink);
       dispatch({ type: GET_ALL_PRODUCTS_SUCCESS, payload: data });
@@ -110,7 +110,7 @@ export const deleteProductAction = (productId) => async (dispatch) => {
     const token = localStorage.getItem("authToken");
     console.log("🔍 Sending Token:", token); // ✅ Debugging log
 
-    const { data } = await axios.delete(`http://localhost:8080/api/product/delete/${productId}`, {
+    const { data } = await axios.delete(` /api/product/delete/${productId}`, {
       headers: { Authorization: `Bearer ${token}` }, // ✅ Sends authentication token
       withCredentials: true, // ✅ Ensures cookies are sent
     });
@@ -126,7 +126,7 @@ export const getSingleProductAction = (productId) => async (dispatch) => {
   try {
     dispatch({ type: GET_SINGLE_PRODUCT_REQUEST });
     const { data } = await axios.get(
-      `http://localhost:8080/api/product/getSingleProduct/${productId}`
+      ` /api/product/getSingleProduct/${productId}`
     );
     dispatch({ type: GET_SINGLE_PRODUCT_SUCCESS, payload: data });
   } catch (error) {
@@ -188,7 +188,7 @@ export const updateProductAction = (productId, updateFormData) => async (dispatc
     console.log("🔍 Sending Token:", token); // ✅ Debugging log
 
     const { data } = await axios.put(
-      `http://localhost:8080/api/product/update/${productId}`,
+      ` /api/product/update/${productId}`,
       updateFormData,
       {
         headers: { Authorization: `Bearer ${token}` }, // ✅ Sends authentication token
