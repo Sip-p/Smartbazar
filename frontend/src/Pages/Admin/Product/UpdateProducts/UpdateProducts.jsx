@@ -240,12 +240,14 @@ const UpdateProducts = () => {
                     {Categories &&
                       Categories.map((category) => {
                         return (
-                          <option value={category._id}>
+                          <option key={category._id} value={category._id}>
                             {category.categoryName}
                           </option>
                         );
                       })}
                   </select>
+
+                  
                 </div>
                 <br />
                 <br />

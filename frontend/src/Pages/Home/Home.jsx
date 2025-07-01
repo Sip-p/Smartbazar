@@ -22,14 +22,15 @@ import { useState } from "react";
 const Home = () => {
   const dispatch = useDispatch();
   const Navigate = useNavigate();
-
+ 
   //getting user from user
   const { loading: userLoading, user } = useSelector((state) => state.user);
 
   //getting category from state
-  const { loading: categoryLoading, Categories } = useSelector(
-    (state) => state.getAllCategory
-  );
+  // const { loading: categoryLoading, Categories } = useSelector(
+  //   (state) => state.getAllCategory
+  // );
+const { loading: categoryLoading, Categories } = useSelector((state) => state.getAllCategory);
 
   //getting all Reviews from state
   const {
@@ -44,26 +45,46 @@ const Home = () => {
   const [recentProductsSuccess, setRecentProductsSuccess] = useState(false);
   const [recentProducts, setRecentProducts] = useState([]);
 
-  const getRecentProducts = async () => {
-    try {
-      setRecentLoading(true);
-      const { data } = await axios.get("/api/product/recent/products");
-      setRecentProducts(data.products);
-      setRecentLoading(false);
-      setRecentProductsSuccess(true);
-      setRecentLoading(false);
-    } catch (error) {
-      setRecentLoading(false);
-      setRecentProductsError(true);
-      // console.log(error);
-    }
-  };
+  // const getRecentProducts = async () => {
+  //   try {
+  //     setRecentLoading(true);
+  //     const { data } = await axios.get("/api/product/recent/products");
+  //     setRecentProducts(data.products);
+  //     setRecentLoading(false);
+  //     setRecentProductsSuccess(true);
+  //     setRecentLoading(false);
+  //   } catch (error) {
+  //     setRecentLoading(false);
+  //     setRecentProductsError(true);
+  //     // console.log(error);
+  //   }
+  // };
+ useEffect(() => {
+  console.log("🔍 Redux Reviews State:", reviews);
+}, [reviews]);
 
+  const getRecentProducts = async () => {
+  try {
+    setRecentLoading(true);
+    console.log("n")
+const { data } = await axios.get("http://localhost:8080/api/product/recent/products");   
+ console.log("API Response in Frontend:", data); // Debugging log
+    setRecentProducts(data.products);
+    setRecentProductsSuccess(true);
+    setRecentLoading(false);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    setRecentLoading(false);
+    setRecentProductsError(true);
+  }
+};
   useEffect(() => {
     document.title = "Home";
     dispatch(getAllCategoryAction());
     dispatch(getAllReviewsAction());
     getRecentProducts();
+    console.log("Use Effect Triggered")
+     
   }, [dispatch]);
 
   const options = {
@@ -91,7 +112,7 @@ const Home = () => {
     modules: [Autoplay, Navigation],
     className: "mySwiper",
   };
-
+ 
   return (
     <>
       <Header />
@@ -193,11 +214,11 @@ const Home = () => {
                       })}
                     </>
                   ) : (
-                    ""
+                    <p>No</p>
                   )}
                 </div>
               </Swiper>
-            </div>
+             </div>
           </section>
 
           <section className="categories" id="categories">
@@ -218,7 +239,7 @@ const Home = () => {
                       >
                         Shop Now
                       </Link>
-                    </div>
+                     </div>
                   );
                 })}
             </div>

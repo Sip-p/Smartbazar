@@ -23,12 +23,21 @@ const ConfirmOrder = ({ shippingInfo }) => {
     if (user) {
       try {
         setOrderLoading(true);
-        const { data } = await axios.post(`/api/user/new/order`, {
+        const token = localStorage.getItem("authToken"); // ✅ Ensure token is retrieved
+    console.log("🔍 Sending Token:", token);
+        const { data } = await axios.post(`REACT_APP_API_BASE_URL/api/user/new/order`, {
           cartItems,
           shippingInfo,
           userId: user._id,
           total: subTotal,
-        });
+          
+        },
+        {
+    headers: { Authorization: `Bearer ${token}` },
+    withCredentials: true
+  
+}
+      );
         setIsOrderPlace(true);
         setOrderLoading(false);
       } catch (error) {

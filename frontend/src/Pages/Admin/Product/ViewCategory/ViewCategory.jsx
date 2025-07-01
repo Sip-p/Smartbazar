@@ -66,16 +66,19 @@ const ViewCategory = () => {
             {deleteProductError ? <span>{deleteProductError}</span> : ""} */}
             <div className="products-table">
               <table>
-                <thead>
-                  <th>Id</th>
-                  <th>Name</th>
-                  <th>Image</th>
-                  <th colSpan={2}>Actions</th>
-                </thead>
+             <thead>
+  <tr>
+    <th>Id</th>
+    <th>Name</th>
+    <th>Image</th>
+    <th colSpan={2}>Actions</th>
+  </tr>
+</thead>
                 {Categories &&
                   Categories.map((category) => {
                     return (
                       <tbody key={category._id}>
+                        <tr> 
                         <td>{category._id}</td>
                         <td>{category.categoryName}</td>
                         <td>
@@ -102,6 +105,7 @@ const ViewCategory = () => {
                         >
                           <FaTrash />
                         </td>
+                        </tr>
                       </tbody>
                     );
                   })}

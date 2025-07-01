@@ -14,7 +14,7 @@ import {
   UPDATE_CATEGORY_SUCCESS,
 } from "../Constants/categoryConstants";
 
-export const addCategoryReducer = (state = {}, action) => {
+export const addCategoryReducer = (state = { }, action) => {
   switch (action.type) {
     case ADD_CATEGORY_REQUEST:
       return { loading: true };
@@ -40,27 +40,100 @@ export const addCategoryReducer = (state = {}, action) => {
   }
 };
 
-export const getCategoryReducer = (state = {}, action) => {
+// export const getCategoryReducer = (state = {}, action) => {
+//   switch (action.type) {
+//     case GET_CATEGORY_REQUEST:
+//       return { loading: true };
+//     case GET_CATEGORY_SUCCESS:
+//       return {
+//         loading: false,
+//         Categories: action.payload.Categories,
+//         success: action.payload.success,
+//         message: action.payload.message,
+//       };
+//     case GET_CATEGORY_FAIL:
+//       return {
+//         loading: false,
+//         error: action.error,
+//       };
+//     case CLEAR_ERRORS:
+//       return {
+//         ...state,
+//         error: null,
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
+// export const getCategoryReducer = (
+//   state = { Categories: [], loading: false, error: null },
+//   action
+// ) => {
+//   switch (action.type) {
+//     case GET_CATEGORY_REQUEST:
+//       return { ...state, loading: true };
+//     // case GET_CATEGORY_SUCCESS:
+//       return {
+//         ...state,
+//         loading: false,
+//         Categories: action.payload.Categories,
+//         success: action.payload.success,
+//         message: action.payload.message,
+//       };
+//     case GET_CATEGORY_SUCCESS:
+//   console.log("✅ Updating Redux Store with Categories:", action.payload);
+//   return {
+//     ...state,
+//     loading: false,
+//     Categories: action.payload.Categories,  // Ensure correct key usage
+//     success: action.payload.success,
+//     message: action.payload.message,
+//   };
+    
+    
+//       case GET_CATEGORY_FAIL:
+//       return {
+//         ...state,
+//         loading: false,
+//         error: action.error,
+//       };
+//     case CLEAR_ERRORS:
+//       return {
+//         ...state,
+//         error: null,
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
+
+
+export const getCategoryReducer = (
+  state = { Categories: [], loading: false, error: null },
+  action
+) => {
   switch (action.type) {
     case GET_CATEGORY_REQUEST:
-      return { loading: true };
+      return { ...state, loading: true };
+
     case GET_CATEGORY_SUCCESS:
+      console.log("✅ Updating Redux Store with Categories:", action.payload);
       return {
+        ...state,
         loading: false,
-        Categories: action.payload.Categories,
+        Categories: action.payload.Categories, // Ensure correct key usage
         success: action.payload.success,
         message: action.payload.message,
       };
+
     case GET_CATEGORY_FAIL:
-      return {
-        loading: false,
-        error: action.error,
-      };
+      return { ...state, loading: false, error: action.error };
+
     case CLEAR_ERRORS:
-      return {
-        ...state,
-        error: null,
-      };
+      return { ...state, error: null };
+
     default:
       return state;
   }

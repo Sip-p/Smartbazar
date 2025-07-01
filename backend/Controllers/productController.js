@@ -1,51 +1,199 @@
 const productModel = require("../models/productModel");
-const coludinary = require("cloudinary");
+const cloudinary = require('cloudinary').v2;
 const sendError = require("../utils/sendError");
 const { filterData } = require("../utils/filterQuery");
+const crypto = require("crypto");
+
+ 
+
+// Backend: Node.js (for example)
+ 
+const generateSignature = (params) => {
+  const queryString = Object.keys(params)
+    .sort()
+    .map((key) => `${key}=${params[key]}`)
+    .join("&");
+
+  console.log("🔍 String to sign:", queryString);
+  console.log("🔍 Cloud API Secret:", process.env.CLOUD_API_SECRET);
+
+  const signature = crypto
+    .createHash("sha1")
+    .update(queryString + process.env.CLOUD_API_SECRET)
+    .digest("hex");
+
+  console.log("🔍 Generated Signature:", signature); // ✅ Check if it matches Cloudinary's expected signature
+
+  return signature;
+};
+
+ 
+
+// Send this signature in your response
 
 //Add Product
+// const addProduct = async (req, res) => {
+//   try {
+//     const { name, rate, stocks, category, kilogramOption, image } = req.body;
+//     if (kilogramOption.length == 1) {
+//       return sendError(res, 400, ["Weight: Required..!!"]);
+//     } else {
+//       const kgOption = [];
+//       kilogramOption.map((kg) => {
+//         kgOption.push(kg);
+//       });
+
+// const result = await cloudinary.v2.uploader.upload(image, {
+//          folder: "products",
+//       });
+
+//       const newProduct = await productModel.create({
+//         name,
+//         rate,
+//         stocks,
+//         category,
+//         kilogramOption: kgOption,
+//         public_id: result.public_id,
+//         url: result.url,
+//       });
+
+//       res.status(201).json({
+//         success: true,
+//         message: "Product Add SuccessFully..!!",
+//         newProduct,
+//       });
+//     }
+//   } catch (error) {
+//     if (error.name === "ValidationError") {
+//       const errors = {};
+//       Object.keys(error.errors).map((key) => {
+//         errors[key] = error.errors[key].message;
+//       });
+//       sendError(res, 400, Object.values(errors));
+//     } else {
+//       console.log(error);
+//       sendError(res, 400, ["Somethings Went Wrong..!!"]);
+//     }
+//   }
+// };
+
+// const addProduct = async (req, res) => {
+//   try {
+//     const { name, rate, stocks, category, kilogramOption, image } = req.body;
+
+//     // ✅ Ensure kilogramOption is an array before using .map()
+//     const validKilogramOption = Array.isArray(kilogramOption) ? kilogramOption : [];
+
+//     if (validKilogramOption.length === 0) {
+//       return sendError(res, 400, ["Weight: Required..!!"]);
+//     }
+
+//     const kgOption = validKilogramOption.map((kg) => kg);
+
+//     const result = await cloudinary.v2.uploader.upload(image, {
+//       folder: "products",
+//     });
+
+//     const newProduct = await productModel.create({
+//       name,
+//       rate,
+//       stocks,
+//       category,
+//       kilogramOption: kgOption,
+//       public_id: result.public_id,
+//       url: result.url,
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Product Added Successfully..!!",
+//       newProduct,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error Adding Product:", error.message);
+//     sendError(res, 400, ["Something Went Wrong..!!"]);
+//   }
+// };
+
+// const addProduct = async (req, res) => {
+//   try {
+//     console.log("🔍 New Product Data Received:", req.body);
+
+//     const { name, rate, stocks, category, kilogramOption, image } = req.body;
+
+//     if (!name || !rate || !category || !stocks || !image) {
+//       return sendError(res, 400, ["All fields are required!"]);
+//     }
+
+//     // Upload image to Cloudinary without manually signing
+//     const result = await cloudinary.uploader.upload(image, {
+//       folder: "products",
+//     });
+
+//     const newProduct = await productModel.create({
+//       name,
+//       rate,
+//       stocks,
+//       category,
+//       kilogramOption,
+//       public_id: result.public_id,
+//       url: result.secure_url,
+//     });
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Product Added Successfully!",
+//       newProduct,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error Adding Product:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message || "Internal Server Error",
+//     });
+//   }
+// };
+
 const addProduct = async (req, res) => {
   try {
+    console.log("🔍 New Product Data Received:", req.body);
+
     const { name, rate, stocks, category, kilogramOption, image } = req.body;
-    if (kilogramOption.length == 1) {
-      sendError(res, 400, ["Weight: Required..!!"]);
-    } else {
-      const kgOption = [];
-      kilogramOption.map((kg) => {
-        kgOption.push(kg);
-      });
 
-      const result = await coludinary.v2.uploader.upload(image, {
-        folder: "products",
-      });
-
-      const newProduct = await productModel.create({
-        name,
-        rate,
-        stocks,
-        category,
-        kilogramOption: kgOption,
-        public_id: result.public_id,
-        url: result.url,
-      });
-
-      res.status(201).json({
-        success: true,
-        message: "Product Add SuccessFully..!!",
-        newProduct,
-      });
+    if (!name || !rate || !category || !stocks || !image) {
+      return sendError(res, 400, ["All fields are required!"]);
     }
+
+    // ✅ Ensure `generateSignature` function is correctly defined at the top of this file
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const signature = generateSignature({ folder: "products", timestamp });
+
+    // ✅ Use chunked upload for large files
+    const result = await cloudinary.uploader.upload_large(image, {
+      folder: "products",
+      chunk_size: 6000000, // Upload in 6MB chunks
+      timestamp,
+      signature,
+      api_key: process.env.CLOUD_API_KEY,
+    });
+
+    console.log("✅ Cloudinary Upload Success:", result);
+
+    const newProduct = await productModel.create({
+      name,
+      rate,
+      stocks,
+      category,
+      kilogramOption,
+      public_id: result.public_id,
+      url: result.url,
+    });
+
+    console.log("✅ Product Successfully Added:", newProduct);
+    res.status(201).json({ success: true, message: "Product Added Successfully!", newProduct });
   } catch (error) {
-    if (error.name === "ValidationError") {
-      const errors = {};
-      Object.keys(error.errors).map((key) => {
-        errors[key] = error.errors[key].message;
-      });
-      sendError(res, 400, Object.values(errors));
-    } else {
-      console.log(error);
-      sendError(res, 400, ["Somethings Went Wrong..!!"]);
-    }
+    console.error("❌ Error Adding Product:", error);
+    res.status(500).json({ success: false, message: error.message || "Internal Server Error" });
   }
 };
 
@@ -84,7 +232,7 @@ const updateProduct = async (req, res) => {
     if (productId) {
       const isProductExit = await productModel.findById(productId);
       if (image !== "") {
-        const result = await coludinary.v2.uploader.upload(image, {
+        const result = await cloudinary.v2.uploader.upload(image, {
           folder: "products",
         });
         isProductExit.url = result.url;
@@ -140,15 +288,38 @@ const getAllProduct = async (req, res) => {
 };
 
 //Retrieve First Five Products
+///....changed
+// const getRecentProducts = async (req, res) => {
+//   try {
+//     // const products = await productModel.find().sort({ date: -1 }).limit(10);
+//     const products = await productModel.find().sort({ createdAt: -1 }).limit(10);
+//     res.status(200).json({
+//       success: true,
+//       products,
+//     });
+//   } catch (error) {
+//     sendError(res, 400, "Something Is Wrong..!!");
+//   }
+// };
+// const getRecentProducts = async (req, res) => {
+//   try {
+//     const products = await productModel.find().sort({ createdAt: -1 }).limit(10);
+//     res.status(200).json({ success: true, products });
+//     console.log("Recent products fetched successfully"); // Debugging log
+//   } catch (error) {
+//     console.log("llll")
+//     console.error("Error fetching recent products:", error); // Debugging log
+//     sendError(res, 500, "Something Is Wrong..!!");
+//   }
+// };
 const getRecentProducts = async (req, res) => {
   try {
-    const products = await productModel.find().sort({ date: -1 }).limit(10);
-    res.status(200).json({
-      success: true,
-      products,
-    });
+    const products = await productModel.find().sort({ createdAt: -1 }).limit(10);
+    console.log("Recent Products from DB:", products); // Debugging log
+    res.status(200).json({ success: true, products });
   } catch (error) {
-    sendError(res, 400, "Something Is Wrong..!!");
+    console.error("Backend Error:", error); // Log error details
+    res.status(500).json({ success: false, message: "Server Error!" });
   }
 };
 

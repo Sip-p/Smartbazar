@@ -26,13 +26,24 @@ const newOrder = async (req, res) => {
 };
 
 //update stock
-const updateStock = (cartItems) => {
-  cartItems.map(async (item) => {
+// const updateStock = (cartItems) => {
+//   cartItems.map(async (item) => {
+//     const product = await productModel.findById(item.id);
+//     product.stocks = product.stocks - item.quantity;
+//     await product.save();
+//   });
+// };
+
+//changed
+const updateStock = async (cartItems) => {
+  for (const item of cartItems) {
     const product = await productModel.findById(item.id);
-    product.stocks = product.stocks - item.quantity;
+    product.stocks -= item.quantity;
     await product.save();
-  });
+  }
 };
+
+
 
 //Get Customer Orders
 const getMyOrders = async (req, res) => {

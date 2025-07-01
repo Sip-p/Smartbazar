@@ -11,12 +11,13 @@ import { Link } from "react-router-dom";
 
 const OrderList = () => {
   const dispatch = useDispatch();
-  const { loading, orders, success, ordersCounts, error } = useSelector(
+  const { loading, orders, success,   error } = useSelector(
     (state) => state.adminAllOrders
   );
+  console.log("orders from Redux:", orders);
   useEffect(() => {
     dispatch(getAllOrdersAdminAction());
-  }, []);
+  }, [dispatch]);
   return (
     <>
       <Header />

@@ -208,22 +208,20 @@ const Products = () => {
                 {""}
               </div>
 
-              <div className="products-list">
+                <div className="products-list">
                 {products.length !== 0 ? (
                   <div className="products-list-box">
                     {products &&
                       products.map((product) => {
                         return (
                           <div className="product-cart" key={product._id}>
-                            {cartItems.map((item) => {
-                              return item.name === product.name ? (
-                                <span className="product-cart-item-qty">
-                                  {item.quantity} kg in cart
-                                </span>
-                              ) : (
-                                ""
-                              );
-                            })}
+                           {cartItems.map((item, index) => {
+  return item.name === product.name ? (
+    <span key={`${item.name}-${index}`} className="product-cart-item-qty">
+      {item.quantity} kg in cart
+    </span>
+  ) : null;
+})}
 
                             <img src={product.url} alt="" />
                             <h2>{product.name}</h2>
@@ -243,9 +241,9 @@ const Products = () => {
                                   >
                                     {product.kilogramOption.map((weight) => {
                                       return (
-                                        <option value={weight.$numberDecimal}>
-                                          {weight.$numberDecimal} Kg
-                                        </option>
+                                        <option key={weight.$numberDecimal} value={weight.$numberDecimal}>
+  {weight.$numberDecimal} Kg
+</option>
                                       );
                                     })}
                                   </select>

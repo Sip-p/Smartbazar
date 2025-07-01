@@ -111,11 +111,27 @@ const changeUserPassword = async (req, res) => {
 };
 
 //Get Logged User Data
+// const getLoggedUser = async (req, res) => {
+//   res.status(200).json({
+//     success: true,
+//     user: req.user,
+//   });
+// };
+
+
 const getLoggedUser = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    user: req.user,
-  });
+  try {
+    console.log("🔍 Checking req.user:", req.user); // Debugging log
+
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized: No user found!" });
+    }
+
+    res.status(200).json({ success: true, user: req.user });
+  } catch (error) {
+    console.error("❌ Error fetching user:", error.message);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
 
 //Send Password Reset Email To User

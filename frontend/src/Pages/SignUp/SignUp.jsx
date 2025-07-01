@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../Components/Footer/Footer";
 import Header from "../../Components/Header/Header";
@@ -15,8 +16,9 @@ import { userRegisterAction, clearError } from "../../Redux/Actions/userAction";
 import { useRef } from "react";
 import { ImEnter } from "react-icons/im";
 import Loader from "../../Components/Loader/Loader";
-
+import { useEffect } from "react";
 const SignUp = () => {
+
   const dispatch = useDispatch();
   const passwordToggle = useRef();
   const RegisterSuccess = useRef();
@@ -60,6 +62,14 @@ const SignUp = () => {
       // console.log(error);
     }, 5000);
   }
+
+  // const { error, success, loading } = useSelector((state) => state.register);
+
+useEffect(() => {
+  console.log("🛠 Redux State - Error:", error);
+  console.log("🛠 Redux State - Success:", success);
+  console.log("🛠 Redux State - Loading:", loading);
+}, [error, success, loading]);
 
   return (
     <>

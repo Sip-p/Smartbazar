@@ -60,67 +60,44 @@ const ViewProducts = () => {
             {deleteSuccess ? <span>{"Product Deleted..!!"}</span> : ""}
             {deleteProductError ? <span>{deleteProductError}</span> : ""}
             <div className="products-table">
-              <table>
-                <thead>
-                  <th>Id</th>
-                  <th>Name</th>
-                  <th>Image</th>
-                  <th>Rate</th>
-                  <th>Category</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th colSpan={2}>Actions</th>
-                </thead>
-                {products &&
-                  products.map((product) => {
-                    return (
-                      <tbody key={product._id}>
-                        <td>{product._id}</td>
-                        <td>{product.name}</td>
-                        <td>
-                          <img src={product.url} alt="product Image" />
-                        </td>
-                        <td>₹ {product.rate}/Kg</td>
-                        <td>{product.category.categoryName}</td>
-                        <td>{product.stocks}</td>
-                        <td
-                          style={{
-                            fontWeight: 500,
-                            textTransform: "uppercase",
-                            color: product.stocks <= 0 ? "red" : "green",
-                          }}
-                        >
-                          {product.stocks <= 0 ? "Out Of Stock" : "In Stock"}
-                        </td>
-
-                        <td>
-                          <Link
-                            to={`/admin/update/products/${product._id}`}
-                            state={{
-                              productName: product.name,
-                              productRate: product.rate,
-                              productStock: product.stocks,
-                              productCategory: product.category.categoryName,
-                              productImage: product.url,
-                              productWeight: product.kilogramOption,
-                            }}
-                          >
-                            <HiPencilAlt />
-                          </Link>
-                        </td>
-
-                        <td
-                          className="admin-delete-products-icon"
-                          onClick={() => {
-                            deleteProduct(product._id);
-                          }}
-                        >
-                          <FaTrash />
-                        </td>
-                      </tbody>
-                    );
-                  })}
-              </table>
+        <table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Image</th>
+      <th>Rate</th>
+      <th>Category</th>
+      <th>Stock</th>
+      <th>Status</th>
+      <th colSpan={2}>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {products &&
+      products.map((product) => (
+        <tr key={product._id}>
+          <td>{product._id}</td>
+          <td>{product.name}</td>
+          <td><img src={product.url} alt="product Image" /></td>
+          <td>₹ {product.rate}/Kg</td>
+          <td>{product.category?.categoryName || "No Category"}</td>
+          <td>{product.stocks}</td>
+          <td style={{ fontWeight: 500, textTransform: "uppercase", color: product.stocks <= 0 ? "red" : "green" }}>
+            {product.stocks <= 0 ? "Out Of Stock" : "In Stock"}
+          </td>
+          <td>
+            <Link to={`/admin/update/products/${product._id}`} state={{ productName: product.name, productRate: product.rate, productStock: product.stocks, productCategory: product.category?.categoryName, productImage: product.url, productWeight: product.kilogramOption }}>
+              <HiPencilAlt />
+            </Link>
+          </td>
+          <td className="admin-delete-products-icon" onClick={() => deleteProduct(product._id)}>
+            <FaTrash />
+          </td>
+        </tr>
+      ))}
+  </tbody>
+</table>
             </div>
           </>
         )}

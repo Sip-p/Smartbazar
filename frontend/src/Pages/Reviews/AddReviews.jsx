@@ -22,28 +22,63 @@ const AddReviews = () => {
 
   document.title = `Add Review`;
 
-  //Add Reviews
-  const addReviewsHandel = async () => {
-    try {
-      if (comment.trim().length !== 0 && ratings !== 0) {
-        setAddLoading(true);
-        const { data } = await axios.post("/api/user/add/review", {
-          comment,
-          ratings,
-        });
 
-        setAddLoading(false);
-        setAddSuccess(data.success);
-        setMessage(data.message);
-      } else {
-        setValidationError("All Field Are Required..!!");
-      }
-    } catch (error) {
+  //Add Reviews
+  // const addReviewsHandel = async () => {
+  //   try {
+  //     if (comment.trim().length !== 0 && ratings !== 0) {
+  //       setAddLoading(true);
+  //       const { data } = await axios.post("http://localhost:8080/api/user/add/review", {
+  //         comment,
+  //         ratings,
+  //       });
+
+  //       setAddLoading(false);
+  //       setAddSuccess(data.success);
+  //       setMessage(data.message);
+  //     } else {
+  //       setValidationError("All Field Are Required..!!");
+  //     }
+  //   } catch (error) {
+  //     setAddLoading(false);
+  //     setAddSuccess(false);
+  //     setAddError(error.response.data.message);
+  //   }
+  // };
+
+const addReviewsHandel = async () => {
+  try {
+    if (comment.trim().length !== 0 && ratings !== 0) {
+      setAddLoading(true);
+
+      const token = localStorage.getItem("authToken"); // ✅ Ensure the token is stored
+
+      console.log("📢 Sending Review Request:", { comment, ratings });
+
+      const { data } = await axios.post("http://localhost:8080/api/user/add/review", {
+        comment,
+        ratings,
+      }, {
+        withCredentials: true, // ✅ Ensures cookies are sent
+        headers: { Authorization: `Bearer ${token}` } // ✅ Sends authentication token
+      });
+
+      console.log("✅ Review added successfully:", data);
+
       setAddLoading(false);
-      setAddSuccess(false);
-      setAddError(error.response.data.message);
+      setAddSuccess(data.success);
+      setMessage(data.message);
+    } else {
+      setValidationError("All Fields Are Required..!!");
     }
-  };
+  } catch (error) {
+    console.error("❌ Error adding review:", error.response?.data?.message || "Unknown error");
+    setAddLoading(false);
+    setAddSuccess(false);
+    setAddError(error.response?.data?.message || "Unknown error");
+  }
+};
+
   if (validationError) {
     setTimeout(() => {
       setValidationError(null);
@@ -84,11 +119,14 @@ const AddReviews = () => {
               readOnly
             />
             <div className="stars add-reviews-star">
-              <Rating
-                onChange={(e) => setRatings(e.target.value)}
-                value={ratings}
-                size="large"
-              />
+       <Rating
+  onChange={(event, newValue) => {
+    setRatings(newValue || 0); // Fallback to 0 if null
+  }}
+  value={ratings}
+  size="large"
+/>
+              
             </div>
             <textarea
               value={comment}

@@ -226,7 +226,7 @@ const AddProduct = () => {
                   </div>
                 </div>
                 <br />
-                <div className="product-category">
+                {/* <div className="product-category">
                   <select
                     onChange={(e) => {
                       setCategory(e.target.value);
@@ -243,7 +243,20 @@ const AddProduct = () => {
                         );
                       })}
                   </select>
-                </div>
+                </div> */}
+
+
+                <div className="product-category">
+  <select onChange={(e) => setCategory(e.target.value)} required>
+    <option value="">Choose Category</option>
+    {Categories &&
+      Categories.map((category) => (
+        <option key={category._id} value={category._id}>
+          {category.categoryName}
+        </option>
+      ))}
+  </select>
+</div>
                 <br />
                 <br />
                 <div className="product-image">
